@@ -1,0 +1,64 @@
+drop database if exists rollcalldb;
+create database rollcalldb;
+use rollcalldb;
+
+create table o_rollcall (
+    roll_no int primary key,
+    name varchar(40),
+    subject varchar(30)
+);
+
+create table n_rollcall (
+    roll_no int primary key,
+    name varchar(40),
+    subject varchar(30)
+);
+
+insert into o_rollcall values
+(1, 'Swaraj', 'DBMS'),
+(2, 'Ravi', 'CN'),
+(3, 'Sneha', 'SE'),
+(4, 'Amit', 'SPOS');
+
+insert into n_rollcall values
+(3, 'Sneha', 'SE'),
+(4, 'Amit', 'SPOS'),
+(5, 'Kiran', 'AI'),
+(6, 'Priya', 'ML');
+
+delimiter $$
+
+create procedure merge_rollcall(in sub varchar(30))
+begin
+    declare done int default 0;
+    declare rno int;
+    declare sname varchar(40);
+    declare ssub varchar(30);
+
+    declare cur cursor for
+        select roll_no, name, subject
+        from n_rollcall
+        where subject = sub;
+
+    declare continue handler for not found set done = 1;
+
+    open cur;
+    read_loop: loop
+        fetch cur into rno, sname, ssub;
+        if done = 1 then
+            leave read_loop;
+        end if;
+
+        if not exists (select * from o_rollcall where roll_no = rno) then
+            insert into o_rollcall values (rno, sname, ssub);
+        end if;
+    end loop;
+    close cur;
+end$$
+
+delimiter ;
+
+call merge_rollcall('AI');
+call merge_rollcall('ML');
+select * from o_rollcall;
+

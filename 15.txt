@@ -1,0 +1,90 @@
+
+create database library;
+use library;
+
+create table publisher (
+    pid int primary key,
+    pname varchar(40),
+    address varchar(100),
+    state varchar(30),
+    phone varchar(15),
+    emailid varchar(50)
+);
+
+create table author (
+    aid int primary key,
+    aname varchar(40),
+    state varchar(30),
+    city varchar(30),
+    zip varchar(10),
+    phone varchar(15),
+    url varchar(100)
+);
+
+create table book (
+    isbn int primary key,
+    book_title varchar(60),
+    category varchar(30),
+    price decimal(10,2),
+    copyright_date year,
+    year int,
+    page_count int,
+    pid int,
+    aid int,
+    foreign key (pid) references publisher(pid),
+    foreign key (aid) references author(aid)
+);
+
+insert into publisher values
+(1, 'Pearson', 'FC Road, Pune', 'Maharashtra', '9876543210', 'pearson@gmail.com'),
+(2, 'McGraw Hill', 'Bandra, Mumbai', 'Maharashtra', '9988776655', 'mcgrawhill@gmail.com'),
+(3, 'Mehta', 'Law College Road, Pune', 'Maharashtra', '9090909090', 'mehta@gmail.com');
+
+insert into author values
+(101, 'Chetan Bhagat', 'Maharashtra', 'Mumbai', '400001', '8888888888', 'chetanbhagat.com'),
+(102, 'Korth', 'Maharashtra', 'Pune', '411001', '7777777777', 'korthdb.com'),
+(103, 'Raghu', 'Karnataka', 'Bangalore', '560001', '9999999999', 'raghuinfo.com'),
+(104, 'Chirag', 'Maharashtra', 'Pune', '411004', '6666666666', 'chiragbooks.com');
+
+insert into book values
+(1001, 'Half Girlfriend', 'Novel', 350, 2014, 2014, 280, 1, 101),
+(1002, 'DBMS Concepts', 'Education', 500, 2008, 2008, 950, 2, 102),
+(1003, 'Operating Systems', 'Education', 450, 2012, 2012, 850, 3, 103),
+(1004, 'Five Point Someone', 'Novel', 300, 2005, 2005, 250, 3, 101),
+(1005, 'Cloud Basics', 'Tech', 200, 2009, 2009, 90, 2, 104);
+
+select city, phone, url
+from author
+where aname = 'Chetan Bhagat';
+
+select b.book_title, b.price, a.aname, a.url
+from book b
+join publisher p on b.pid = p.pid
+join author a on b.aid = a.aid
+where p.pname = 'Mehta';
+
+update publisher
+set phone = '123456'
+where pname = 'Mehta';
+
+select p.pname, avg(b.price) as avg_price, max(b.price) as max_price, min(b.price) as min_price
+from book b
+join publisher p on b.pid = p.pid
+group by p.pname;
+
+delete from book
+where page_count < 100;
+
+select *
+from author
+where city = 'Pune' and aname like 'C%';
+
+select a1.*
+from author a1
+join author a2 on a1.city = a2.city
+where a2.aname = 'Korth' and a1.aid <> a2.aid;
+
+select *
+from book
+where copyright_date < 2010;
+

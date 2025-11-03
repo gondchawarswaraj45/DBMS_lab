@@ -1,0 +1,80 @@
+
+create database company;
+use company;
+
+create table dept (
+    deptno int primary key,
+    deptname varchar(30),
+    location varchar(30)
+);
+
+create table emp (
+    eno int primary key,
+    ename varchar(30),
+    job varchar(30),
+    hiredate date,
+    salary decimal(10,2),
+    commission decimal(10,2),
+    deptno int,
+    foreign key (deptno) references dept(deptno)
+);
+
+insert into dept values
+(10, 'Accounts', 'Pune'),
+(20, 'Sales', 'Mumbai'),
+(30, 'Dev', 'Nagpur'),
+(40, 'HR', 'Delhi');
+
+insert into emp values
+(101, 'Ishaan', 'Manager', '1981-06-09', 5000, 500, 10),
+(102, 'Ravi', 'Salesman', '1981-02-20', 3000, 800, 20),
+(103, 'Irshaad', 'Clerk', '1982-12-10', 1500, 0, 30),
+(104, 'Amit', 'Salesman', '1980-12-17', 2500, 400, 20),
+(105, 'Suresh', 'Analyst', '1981-09-28', 4000, 0, 30),
+(106, 'Imran', 'Developer', '1983-05-11', 3500, 0, 30),
+(107, 'Rohit', 'Manager', '1981-04-02', 4500, 0, 10),
+(108, 'Kiran', 'Clerk', '1980-09-08', 1200, 0, 20);
+
+select max(salary) as max_salary_salesman
+from emp
+where job = 'Salesman';
+
+select ename
+from emp
+where ename like 'I%';
+
+select *
+from emp
+where hiredate < '1981-09-30';
+
+select *
+from emp
+order by salary desc;
+
+select count(*) as total_emp, avg(salary) as avg_salary
+from emp
+where deptno = 20;
+
+select hiredate, avg(salary) as avg_salary, min(salary) as min_salary
+from emp
+where deptno = 10
+group by hiredate;
+
+select e.ename, d.deptname
+from emp e
+join dept d on e.deptno = d.deptno;
+
+select d.deptname, sum(e.salary) as total_salary
+from emp e
+join dept d on e.deptno = d.deptno
+group by d.deptname;
+
+select e.*
+from emp e
+join dept d on e.deptno = d.deptno
+where d.deptname = 'Dev';
+
+update emp
+set salary = salary * 1.05
+where deptno = 10;
+

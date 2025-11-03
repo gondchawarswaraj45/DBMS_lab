@@ -1,0 +1,77 @@
+drop database if exists propertydealers;
+create database propertydealers;
+use propertydealers;
+
+create table branch(
+    branchno varchar(10) primary key,
+    street varchar(50),
+    city varchar(30),
+    postcode varchar(10)
+);
+
+create table staff(
+    staffno varchar(10) primary key,
+    fname varchar(30),
+    lname varchar(30),
+    position varchar(30),
+    sex char(1),
+    dob date,
+    salary decimal(10,2),
+    branchno varchar(10),
+    foreign key(branchno) references branch(branchno) on delete cascade
+);
+
+create table propertyforrent(
+    propertyno varchar(10) primary key,
+    street varchar(50),
+    city varchar(30),
+    postcode varchar(10),
+    type varchar(20),
+    rooms int,
+    rent decimal(10,2),
+    staffno varchar(10),
+    branchno varchar(10),
+    foreign key(staffno) references staff(staffno) on delete cascade,
+    foreign key(branchno) references branch(branchno) on delete cascade
+);
+
+insert into branch values
+('B1','mg road','pune','411041'),
+('B2','central ave','nagpur','440001'),
+('B3','civil lines','mumbai','400001');
+
+insert into staff values
+('S121','amit','patil','manager','M','1990-03-15',75000,'B1'),
+('S122','neha','joshi','assistant','F','1995-06-20',50000,'B1'),
+('S123','rajan','sharma','clerk','M','1992-11-05',45000,'B2'),
+('S124','anita','rai','manager','F','1988-07-12',70000,'B2'),
+('S125','aakash','nanda','clerk','M','1994-09-19',40000,'B3'),
+('S126','sneha','pawar','assistant','F','1996-12-22',48000,'B3');
+
+insert into propertyforrent values
+('P1','shivaji nagar','pune','411041','flat',3,25000,'S121','B1'),
+('P2','civil lines','mumbai','400001','villa',5,45000,'S125','B3'),
+('P3','central ave','nagpur','440001','flat',2,18000,'S123','B2'),
+('P4','mg road','pune','411041','house',4,30000,'S122','B1'),
+('P5','bandra','mumbai','400050','flat',3,38000,'S126','B3');
+
+update staff set lname = 'shinde' where staffno = 'S126';
+
+delete from branch where postcode = '411041';
+
+select * from staff where fname like '%a%a%' or lname like '%a%a%';
+
+select branchno, max(salary) as max_salary
+from staff
+group by branchno
+order by max_salary desc;
+
+select * from propertyforrent where staffno = 'S123';
+
+select avg(rent) as avg_rent_pune
+from propertyforrent
+where city = 'pune';
+
+select branchno, count(propertyno) as property_count
+from propertyforrent
+group by branchno;

@@ -1,0 +1,80 @@
+create database propertydealer;
+use propertydealer;
+
+create table branch (
+    branchno varchar(10) primary key,
+    street varchar(50),
+    city varchar(30),
+    postcode varchar(10)
+);
+
+create table staff (
+    staffno varchar(10) primary key,
+    fname varchar(30),
+    lname varchar(30),
+    position varchar(30),
+    sex char(1),
+    dob date,
+    salary decimal(10,2),
+    branchno varchar(10),
+    foreign key (branchno) references branch(branchno)
+);
+
+create table propertyforrent (
+    propertyno varchar(10) primary key,
+    street varchar(50),
+    city varchar(30),
+    postcode varchar(10),
+    type varchar(20),
+    rooms int,
+    rent decimal(10,2),
+    staffno varchar(10),
+    branchno varchar(10),
+    foreign key (staffno) references staff(staffno),
+    foreign key (branchno) references branch(branchno)
+);
+
+insert into branch values
+('B001', 'FC Road', 'Pune', '411004'),
+('B002', 'Carter Road', 'Mumbai', '400052'),
+('B003', 'MG Road', 'Nagpur', '440001');
+
+insert into staff values
+('S101', 'Rahul', 'Deshmukh', 'Manager', 'M', '1985-03-10', 75000, 'B001'),
+('S102', 'Sneha', 'Patil', 'Saleswoman', 'F', '1990-07-15', 45000, 'B001'),
+('S103', 'Amit', 'Sharma', 'Salesman', 'M', '1995-06-22', 40000, 'B002'),
+('S104', 'Priya', 'Joshi', 'Clerk', 'F', '2003-11-05', 30000, 'B003'),
+('S105', 'Vikas', 'Kulkarni', 'Manager', 'M', '1988-01-20', 70000, 'B002');
+
+insert into propertyforrent values
+('P001', 'JM Road', 'Pune', '411005', 'Flat', 3, 25000, 'S101', 'B001'),
+('P002', 'Baner Road', 'Pune', '411045', 'Bungalow', 5, 65000, 'S102', 'B001'),
+('P003', 'Marine Drive', 'Mumbai', '400020', 'Flat', 4, 55000, 'S103', 'B002'),
+('P004', 'Sitabuldi', 'Nagpur', '440010', 'Flat', 2, 20000, 'S104', 'B003'),
+('P005', 'Bandra', 'Mumbai', '400050', 'House', 3, 35000, 'S105', 'B002');
+
+update branch set street = 'MG' where branchno = 'B001';
+
+select fname, lname, salary
+from staff
+where salary > (select avg(salary) from staff);
+
+select type, rooms
+from propertyforrent
+where city = 'Pune';
+
+select fname, lname, position
+from staff
+where position in ('Salesman', 'Saleswoman');
+
+select count(*) as flat_count
+from propertyforrent
+where type = 'Flat';
+
+select fname, lname, dob
+from staff
+where dob < '2004-01-01';
+
+select branchno, count(*) as total_staff
+from staff
+group by branchno;

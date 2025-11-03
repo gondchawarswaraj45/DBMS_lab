@@ -1,0 +1,56 @@
+create database company_db;
+use company_db;
+
+create table dept (
+    dept_id int primary key auto_increment,
+    dept_name varchar(50) not null,
+    location varchar(50)
+);
+
+create table emp (
+    emp_id int primary key,
+    emp_name varchar(50) not null,
+    salary decimal(10,2),
+    hire_date date,
+    dept_id int,
+    foreign key (dept_id) references dept(dept_id)
+);
+
+insert into dept (dept_name, location) values
+('HR', 'Pune'),
+('IT', 'Mumbai'),
+('Finance', 'Nagpur');
+
+insert into emp (emp_id, emp_name, salary, hire_date, dept_id) values
+(1, 'Swaraj', 50000, '2022-01-10', 1),
+(2, 'Ravi', 65000, '2021-05-15', 2),
+(3, 'Bhakti', 55000, '2020-03-20', 3),
+(4, 'Tanmay', 48000, '2023-06-01', 2),
+(5, 'Priya', 70000, '2019-08-25', 1);
+
+create view high_salary_view as
+select emp_name, salary, dept_id from emp where salary > 50000;
+
+create view emp_dept_view as
+select e.emp_id, e.emp_name, e.salary, d.dept_name, d.location
+from emp e
+join dept d on e.dept_id = d.dept_id;
+
+update high_salary_view set salary = 72000 where emp_name = 'Ravi';
+
+create index EmployeeId on emp (dept_id asc, emp_id asc);
+
+create table emp_seq (
+    id int primary key auto_increment
+);
+
+insert into emp_seq values (5);
+
+insert into emp_seq values (null);
+set @next_id = last_insert_id();
+
+insert into emp (emp_id, emp_name, salary, hire_date, dept_id)
+values (@next_id, 'Kiran', 62000, '2024-04-12', 3);
+
+select * from emp;
+

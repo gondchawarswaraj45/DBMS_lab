@@ -1,0 +1,82 @@
+create database bank;
+use bank;
+
+create table branch (
+    bname varchar(30) primary key,
+    city varchar(30)
+);
+
+create table customers (
+    cname varchar(30) primary key,
+    city varchar(30)
+);
+
+create table deposit (
+    actno int primary key,
+    cname varchar(30),
+    bname varchar(30),
+    amount decimal(10,2),
+    adate date,
+    foreign key (cname) references customers(cname),
+    foreign key (bname) references branch(bname)
+);
+
+create table borrow (
+    loanno int primary key,
+    cname varchar(30),
+    bname varchar(30),
+    amount decimal(10,2),
+    foreign key (cname) references customers(cname),
+    foreign key (bname) references branch(bname)
+);
+
+insert into branch values
+('FC Road', 'Pune'),
+('MG Road', 'Mumbai'),
+('Carter Road', 'Mumbai'),
+('Civil Lines', 'Nagpur');
+
+insert into customers values
+('Anil', 'Pune'),
+('Sunita', 'Mumbai'),
+('Ravi', 'Nagpur'),
+('Kiran', 'Pune'),
+('Sneha', 'Mumbai');
+
+insert into deposit values
+(101, 'Anil', 'FC Road', 50000, '2023-04-15'),
+(102, 'Sunita', 'MG Road', 65000, '2023-05-10'),
+(103, 'Ravi', 'Civil Lines', 40000, '2023-03-20'),
+(104, 'Kiran', 'FC Road', 25000, '2023-02-05'),
+(105, 'Sneha', 'Carter Road', 80000, '2023-06-12');
+
+insert into borrow values
+(201, 'Anil', 'FC Road', 30000),
+(202, 'Ravi', 'Civil Lines', 20000),
+(203, 'Sneha', 'Carter Road', 40000),
+(204, 'Sunita', 'MG Road', 35000);
+
+select bname
+from branch
+where city = 'Mumbai';
+
+select actno, amount
+from deposit;
+
+update customers
+set city = 'Mumbai'
+where cname = 'Anil';
+
+select count(*) as total_depositors
+from deposit;
+
+select min(amount) as min_amount, max(amount) as max_amount
+from deposit;
+
+create index idx_deposit_actno
+on deposit(actno);
+
+create view borrow_view as
+select loanno, cname, bname, amount
+from borrow;
+

@@ -1,0 +1,52 @@
+drop database if exists librarydb2;
+create database librarydb2;
+use librarydb2;
+
+create table library (
+    book_id int primary key,
+    book_name varchar(50),
+    author varchar(50),
+    price decimal(10,2)
+);
+
+create table library_audit (
+    audit_id int auto_increment primary key,
+    book_id int,
+    book_name varchar(50),
+    author varchar(50),
+    price decimal(10,2),
+    action_type varchar(30),
+    action_date datetime
+);
+
+insert into library values
+(1, 'DBMS Concepts', 'Korth', 500),
+(2, 'Operating Systems', 'Galvin', 450),
+(3, 'AI Basics', 'Stuart', 600);
+
+delimiter $$
+
+create trigger before_library_update
+before update on library
+for each row
+begin
+    insert into library_audit (book_id, book_name, author, price, action_type, action_date)
+    values (old.book_id, old.book_name, old.author, old.price, 'BEFORE UPDATE', now());
+end$$
+
+create trigger after_library_delete
+after delete on library
+for each row
+begin
+    insert into library_audit (book_id, book_name, author, price, action_type, action_date)
+    values (old.book_id, old.book_name, old.author, old.price, 'AFTER DELETE', now());
+end$$
+
+delimiter ;
+
+update library set price = 650 where book_id = 3;
+delete from library where book_id = 2;
+
+select * from library;
+select * from library_audit;
+

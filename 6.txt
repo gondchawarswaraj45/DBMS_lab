@@ -1,0 +1,34 @@
+﻿use city_db;
+db.City.drop();
+db.createCollection("City");
+
+db.City.insertMany([
+  { cityname: "Pune", area: 450, population: 8000000 },
+  { cityname: "Nagpur", area: 390, population: 2500000 },
+  { cityname: "Mumbai", area: 600, population: 20000000 },
+  { cityname: "Nashik", area: 300, population: 950000 },
+  { cityname: "Delhi", area: 1480, population: 19000000 },
+  { cityname: "Aurangabad", area: 350, population: 1200000 },
+  { cityname: "Kolhapur", area: 280, population: 800000 },
+  { cityname: "Solapur", area: 310, population: 900000 }
+]);
+
+var mapFunction = function () {
+  if (this.population > 1000000)
+    emit("HIGHLY POPULATED", 1);
+  else
+    emit("LOW POPULATED", 1);
+};
+
+var reduceFunction = function (key, values) {
+  return Array.sum(values);
+};
+
+db.City.mapReduce(
+  mapFunction,
+  reduceFunction,
+  { out: "population_summary" }
+);
+
+db.population_summary.find().pretty();
+

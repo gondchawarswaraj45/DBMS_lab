@@ -1,0 +1,78 @@
+drop database if exists salesdata;
+create database salesdata;
+use salesdata;
+
+create table sales_representative (
+    rep_no int primary key,
+    name varchar(30),
+    re_office int,
+    quota decimal(10,2),
+    sales decimal(10,2)
+);
+
+create table customers (
+    cust_no int primary key,
+    company varchar(40),
+    cust_rep int,
+    credit_limit decimal(10,2),
+    foreign key (cust_rep) references sales_representative(rep_no)
+);
+
+create table orders (
+    order_no int primary key,
+    cust int,
+    product varchar(30),
+    quantity int,
+    amount decimal(10,2),
+    disc decimal(10,2),
+    foreign key (cust) references customers(cust_no)
+);
+
+insert into sales_representative values
+(301, 'Rahul', 201, 75000, 60000),
+(302, 'Sneha', 201, 70000, 68000),
+(303, 'Amit', 202, 65000, 50000),
+(304, 'Kiran', 202, 60000, 55000);
+
+insert into customers values
+(401, 'Infosys', 301, 90000),
+(402, 'TCS', 302, 85000),
+(403, 'Wipro', 303, 70000),
+(404, 'Tech Mahindra', 304, 65000);
+
+insert into orders values
+(501, 401, 'Software', 5, 15000, 5),
+(502, 402, 'Hardware', 8, 28000, 4),
+(503, 403, 'Software', 10, 35000, 3),
+(504, 404, 'Router', 4, 11000, 6),
+(505, 401, 'Monitor', 6, 14000, 2);
+
+select c.company, c.credit_limit, s.name as rep_name, s.sales
+from customers c
+join sales_representative s on c.cust_rep = s.rep_no;
+
+select o.order_no, o.amount, c.company, c.credit_limit, s.name as rep_name
+from orders o
+join customers c on o.cust = c.cust_no
+join sales_representative s on c.cust_rep = s.rep_no;
+
+select product, sum(amount) as total_sale
+from orders
+group by product
+having sum(amount) > 12000;
+
+select o.amount, c.company, s.name as rep_name
+from orders o
+join customers c on o.cust = c.cust_no
+join sales_representative s on c.cust_rep = s.rep_no
+where o.product = 'Software';
+
+select c.company, c.credit_limit, o.disc
+from customers c
+join orders o on c.cust_no = o.cust;
+
+select s1.name as rep1, s2.name as rep2, s1.re_office
+from sales_representative s1
+join sales_representative s2 on s1.re_office = s2.re_office
+where s1.rep_no <> s2.rep_no;
+

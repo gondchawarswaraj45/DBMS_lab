@@ -1,0 +1,85 @@
+drop database if exists companydb;
+create database companydb;
+use companydb;
+
+create table department (
+    deptid int primary key,
+    dname varchar(40),
+    location varchar(40)
+);
+
+create table employee (
+    empid int primary key,
+    ename varchar(40),
+    salary decimal(10,2),
+    contactno varchar(15),
+    city varchar(40),
+    deptid int,
+    foreign key (deptid) references department(deptid)
+);
+
+insert into department values
+(101, 'HR', 'Pune'),
+(102, 'Sales', 'Mumbai'),
+(103, 'IT', 'Nagpur'),
+(104, 'Finance', 'Delhi');
+
+insert into employee values
+(1, 'Swaraj', 65000, '9999999999', 'Pune', 103),
+(2, 'Ravi', 55000, '8888888888', 'Mumbai', 102),
+(3, 'Sneha', 70000, '7777777777', 'Nagpur', 103),
+(4, 'Amit', 60000, '6666666666', 'Delhi', 104),
+(5, 'Kiran', 50000, '5555555555', 'Pune', 101);
+
+select ename, dname 
+from employee e 
+join department d on e.deptid = d.deptid;
+
+select e.ename, d.dname, d.location 
+from employee e 
+inner join department d on e.deptid = d.deptid;
+
+select e.ename, e.city, d.dname 
+from employee e 
+natural join department;
+
+select d.dname, e.salary, d.location, e.ename 
+from department d 
+right join employee e on d.deptid = e.deptid;
+
+select e.ename, d.dname 
+from employee e 
+left join department d on e.deptid = d.deptid
+union
+select e.ename, d.dname 
+from employee e 
+right join department d on e.deptid = d.deptid;
+
+select e.ename, d.dname 
+from employee e 
+cross join department d;
+
+select e1.ename as employee1, e2.ename as employee2, d.dname 
+from employee e1 
+join employee e2 on e1.deptid = e2.deptid and e1.empid <> e2.empid 
+join department d on e1.deptid = d.deptid;
+
+create view simple_view as 
+select ename, salary, dname 
+from employee e 
+join department d on e.deptid = d.deptid;
+
+create view complex_view as 
+select e.ename, e.city, d.dname, d.location, e.salary 
+from employee e 
+join department d on e.deptid = d.deptid 
+where e.salary > 55000;
+
+update simple_view 
+set salary = 72000 
+where ename = 'Ravi';
+
+drop view simple_view;
+
+select * from complex_view;
+

@@ -1,0 +1,80 @@
+drop database if exists salesdb;
+create database salesdb;
+use salesdb;
+
+create table sales_representative (
+    rep_no int primary key,
+    name varchar(30),
+    re_office int,
+    quota decimal(10,2),
+    sales decimal(10,2)
+);
+
+create table customers (
+    cust_no int primary key,
+    company varchar(40),
+    cust_rep int,
+    credit_limit decimal(10,2),
+    foreign key (cust_rep) references sales_representative(rep_no)
+);
+
+create table orders (
+    order_no int primary key,
+    cust int,
+    product varchar(30),
+    quantity int,
+    amount decimal(10,2),
+    disc decimal(10,2),
+    foreign key (cust) references customers(cust_no)
+);
+
+insert into sales_representative values
+(201, 'Ravi', 101, 80000, 60000),
+(202, 'Sneha', 101, 70000, 65000),
+(203, 'Amit', 102, 60000, 40000),
+(204, 'Kiran', 102, 50000, 30000);
+
+insert into customers values
+(301, 'Infosys', 201, 90000),
+(302, 'TCS', 202, 85000),
+(303, 'Wipro', 203, 70000),
+(304, 'Tech Mahindra', 204, 65000);
+
+insert into orders values
+(401, 301, 'Laptops', 10, 30000, 5),
+(402, 302, 'Desktops', 8, 27000, 7),
+(403, 302, 'Printers', 5, 15000, 3),
+(404, 303, 'Monitors', 12, 32000, 2),
+(405, 304, 'Routers', 6, 18000, 4);
+
+select c.company, c.cust_no, s.name as rep_name, s.re_office
+from customers c
+join sales_representative s on c.cust_rep = s.rep_no;
+
+select o.order_no, o.amount, s.name as salesperson, c.company
+from orders o
+join customers c on o.cust = c.cust_no
+join sales_representative s on c.cust_rep = s.rep_no
+where o.amount > 25000;
+
+select product
+from orders o
+join customers c on o.cust = c.cust_no
+where c.company = 'TCS';
+
+select company, max(disc) as max_discount
+from orders o
+join customers c on o.cust = c.cust_no
+group by company
+order by max_discount desc
+limit 1;
+
+select s1.name as rep1, s2.name as rep2, s1.re_office
+from sales_representative s1
+join sales_representative s2 on s1.re_office = s2.re_office
+where s1.rep_no <> s2.rep_no;
+
+select c.company, c.credit_limit, o.disc
+from customers c
+join orders o on c.cust_no = o.cust;
+

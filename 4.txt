@@ -1,0 +1,37 @@
+﻿use college_agg;
+db.student.drop();
+db.createCollection("student");
+
+db.student.insertMany([
+  { Rollno: 1, Name: "Swaraj", Class: "TE", Div: "A", Subject: "DS", Marks: 85, Address: "Pune" },
+  { Rollno: 2, Name: "Ravi", Class: "TE", Div: "A", Subject: "DS", Marks: 78, Address: "Pune" },
+  { Rollno: 3, Name: "Sneha", Class: "TE", Div: "B", Subject: "DS", Marks: 90, Address: "Nagpur" },
+  { Rollno: 4, Name: "Bhakti", Class: "TE", Div: "B", Subject: "DS", Marks: 88, Address: "Nagpur" },
+  { Rollno: 5, Name: "Tanmay", Class: "TE", Div: "A", Subject: "DBMS", Marks: 70, Address: "Pune" },
+  { Rollno: 6, Name: "Priya", Class: "TE", Div: "B", Subject: "DS", Marks: 95, Address: "Nagpur" },
+  { Rollno: 7, Name: "Kiran", Class: "TE", Div: "A", Subject: "DS", Marks: 80, Address: "Pune" }
+]);
+
+db.student.aggregate([
+  { $match: { Subject: "DS" } },
+  { $group: { _id: "$Address", MaxMarks: { $max: "$Marks" } } }
+]);
+
+db.student.aggregate([
+  { $group: { _id: null, AvgMarks: { $avg: "$Marks" } } }
+]);
+
+db.student.updateMany({}, { $set: { hobbies: [] } });
+db.student.updateOne({ Name: "Swaraj" }, { $push: { hobbies: "Reading" } });
+
+db.student.createIndex({ Name: 1 });
+db.student.createIndex({ Name: 1, Class: 1 });
+
+db.student.dropIndex("Name_1");
+
+db.student.aggregate([
+  { $match: { Subject: "DS" } },
+  { $group: { _id: "$Address", MaxMarks: { $max: "$Marks" }, AvgMarks: { $avg: "$Marks" } } },
+  { $sort: { MaxMarks: -1 } }
+]);
+

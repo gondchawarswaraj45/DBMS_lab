@@ -1,0 +1,68 @@
+drop database if exists libraryfine;
+create database libraryfine;
+use libraryfine;
+
+create table borrower (
+    roll_no int primary key,
+    name varchar(40),
+    dateofissue date,
+    nameofbook varchar(50),
+    status char(1)
+);
+
+create table fine (
+    roll_no int,
+    date date,
+    amt decimal(10,2)
+);
+
+insert into borrower values
+(1, 'Swaraj', '2025-09-10', 'DBMS Concepts', 'I'),
+(2, 'Ravi', '2025-10-01', 'Operating System', 'I'),
+(3, 'Sneha', '2025-10-15', 'Cloud Computing', 'I'),
+(4, 'Amit', '2025-10-25', 'AI Basics', 'I');
+
+delimiter $$
+
+create procedure proc_fine(in p_roll int, in p_book varchar(50))
+begin
+    declare issue_date date;
+    declare days_late int;
+    declare fine_amt decimal(10,2) default 0;
+    declare not_found condition for sqlstate '02000';
+
+    declare exit handler for not_found
+    begin
+        select 'No such borrower or book found!' as message;
+    end;
+
+    select dateofissue into issue_date
+    from borrower
+    where roll_no = p_roll and nameofbook = p_book;
+
+    set days_late = datediff(curdate(), issue_date);
+
+    if days_late between 15 and 30 then
+        set fine_amt = days_late * 5;
+        insert into fine values (p_roll, curdate(), fine_amt);
+    elseif days_late > 30 then
+        set fine_amt = (30 * 5) + ((days_late - 30) * 50);
+        insert into fine values (p_roll, curdate(), fine_amt);
+    else
+        set fine_amt = 0;
+    end if;
+
+    update borrower
+    set status = 'R'
+    where roll_no = p_roll and nameofbook = p_book;
+
+    select concat('Fine Amount = Rs ', fine_amt) as result,
+           concat('Days late = ', days_late) as details;
+end$$
+
+delimiter ;
+
+call proc_fine(1, 'DBMS Concepts');
+select * from fine;
+select * from borrower;
+

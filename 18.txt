@@ -1,0 +1,62 @@
+create database gradesystem;
+use gradesystem;
+
+create table stud_marks (
+    roll int primary key,
+    name varchar(40),
+    total_marks int
+);
+
+create table result (
+    roll int,
+    name varchar(40),
+    class varchar(30)
+);
+
+insert into stud_marks values
+(1, 'Swaraj', 1200),
+(2, 'Ravi', 950),
+(3, 'Sneha', 870),
+(4, 'Amit', 800),
+(5, 'Kiran', 995);
+
+delimiter $$
+
+create procedure proc_grade()
+begin
+    declare done int default 0;
+    declare rno int;
+    declare sname varchar(40);
+    declare marks int;
+    declare cls varchar(30);
+
+    declare cur cursor for select roll, name, total_marks from stud_marks;
+    declare continue handler for not found set done = 1;
+
+    open cur;
+    grade_loop: loop
+        fetch cur into rno, sname, marks;
+        if done = 1 then
+            leave grade_loop;
+        end if;
+
+        if marks >= 990 and marks <= 1500 then
+            set cls = 'Distinction';
+        elseif marks between 900 and 989 then
+            set cls = 'First Class';
+        elseif marks between 825 and 899 then
+            set cls = 'Higher Second Class';
+        else
+            set cls = 'Fail';
+        end if;
+
+        insert into result values (rno, sname, cls);
+    end loop;
+    close cur;
+end$$
+
+delimiter ;
+
+call proc_grade;
+select * from result;
+

@@ -1,0 +1,26 @@
+﻿use college_db;
+db.student.drop();
+db.createCollection("student");
+
+db.student.insertMany([
+  { fname: "Swaraj", lname: "Gondchawar", age: 21, gender: "male", class: "TE A", city: "Pune", state: "MH", grd_point: 35, admission: "Yes" },
+  { fname: "Riyansh", lname: "Patil", age: 19, gender: "male", class: "TE B", city: "Mumbai", state: "MH", grd_point: 32, admission: "Yes" },
+  { fname: "Sneha", lname: "Kulkarni", age: 20, gender: "female", class: "TE B", city: "Bangalore", state: "KA", grd_point: 30, admission: "Yes" },
+  { fname: "Amit", lname: "Jadhav", age: 19, gender: "male", class: "TE B", city: "Nagpur", state: "MH", grd_point: 31, admission: "Yes" },
+  { fname: "Bhakti", lname: "Shinde", age: 22, gender: "female", class: "TE A", city: "Pune", state: "MH", grd_point: 33, admission: "Yes" },
+  { fname: "Sonali", lname: "Soniminde", age: 20, gender: "female", class: "TE C", city: "Nashik", state: "MH", grd_point: 28, admission: "Yes" },
+  { fname: "Priya", lname: "Deshmukh", age: 20, gender: "female", class: "TE A", city: "Chennai", state: "TN", grd_point: 34, admission: "Yes" },
+  { fname: "Tanmay", lname: "Joshi", age: 21, gender: "male", class: "TE B", city: "Bangalore", state: "KA", grd_point: 31, admission: "Yes" },
+  { fname: "Evanshika", lname: "Pawar", age: 17, gender: "female", class: "TE C", city: "Pune", state: "MH", grd_point: 29, admission: "Yes" },
+  { fname: "Omkar", lname: "Jadhav", age: 20, gender: "male", class: "TE B", city: "Bangalore", state: "KA", grd_point: 33, admission: "Yes" }
+]);
+
+db.student.find({ $or: [{ gender: "female" }, { class: "TE B" }, { grd_point: { $gte: 31 } }] }).pretty();
+db.student.updateOne({ fname: "Riyansh" }, { $set: { age: 20 } });
+db.student.updateOne({ lname: "Soniminde" }, { $set: { city: "Nagpur", state: "MH" } });
+db.student.updateMany({ state: "KA" }, { $set: { admission: "Cancelled" } });
+db.student.deleteOne({ fname: "Evanshika", age: { $lt: 18 } });
+db.student.find({ $nor: [{ state: "MH" }, { grd_point: { $lte: 30 } }] }).pretty();
+db.student.find().pretty();
+db.student.count();
+

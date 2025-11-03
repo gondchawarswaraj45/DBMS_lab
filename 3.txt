@@ -1,0 +1,46 @@
+﻿use acad_db;
+db.student.drop();
+db.createCollection("student");
+
+db.student.insertMany([
+  { Rollno: 1, Name: "Swaraj", Class: "TE", Div: "A", Subject: "TOC", Marks: 80, Address: "Pune" },
+  { Rollno: 2, Name: "Ravi", Class: "TE", Div: "A", Subject: "DBMS", Marks: 70, Address: "Mumbai" },
+  { Rollno: 3, Name: "Sneha", Class: "TE", Div: "B", Subject: "DBMS", Marks: 60, Address: "Nagpur" },
+  { Rollno: 4, Name: "Bhakti", Class: "TE", Div: "B", Subject: "SPOS", Marks: 75, Address: "Pune" },
+  { Rollno: 5, Name: "Tanmay", Class: "TE", Div: "A", Subject: "SPOS", Marks: 65, Address: "Bangalore" },
+  { Rollno: 6, Name: "Kiran", Class: "TE", Div: "B", Subject: "TOC", Marks: 55, Address: "Pune" },
+  { Rollno: 7, Name: "Omkar", Class: "TE", Div: "A", Subject: "DBMS", Marks: 85, Address: "Chennai" },
+  { Rollno: 8, Name: "Priya", Class: "TE", Div: "B", Subject: "DBMS", Marks: 45, Address: "Pune" }
+]);
+
+db.student.aggregate([
+  { $match: { Subject: "TOC" } },
+  { $group: { _id: null, Avg_Marks: { $avg: "$Marks" } } }
+]);
+
+db.student.aggregate([
+  { $group: { _id: "$Div", Count: { $sum: 1 } } }
+]);
+
+db.student.aggregate([
+  { $match: { Div: "B", Subject: "DBMS" } },
+  { $group: { _id: "$Div", MinMarks: { $min: "$Marks" } } }
+]);
+
+db.student.aggregate([
+  { $match: { Subject: "SPOS", Address: "Pune" } },
+  { $group: { _id: null, Total_Sum: { $sum: "$Marks" } } }
+]);
+
+db.student.aggregate([
+  { $match: { Subject: "DBMS" } },
+  { $group: { _id: "$Div", Count: { $sum: 1 } } }
+]);
+
+db.student.aggregate([
+  { $group: { _id: "$Address", Count: { $sum: 1 } } }
+]);
+
+db.student.createIndex({ Name: 1 });
+db.student.createIndex({ Div: 1, Subject: 1 });
+

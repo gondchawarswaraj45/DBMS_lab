@@ -1,0 +1,49 @@
+﻿use student_db;
+db.students_info.drop();
+db.createCollection("students_info");
+
+db.students_info.insertMany([
+  { name: "Swaraj", subject: "DBMS", marks: 85 },
+  { name: "Ravi", subject: "DBMS", marks: 65 },
+  { name: "Sneha", subject: "DBMS", marks: 45 },
+  { name: "Bhakti", subject: "DBMS", marks: 72 },
+  { name: "Tanmay", subject: "DBMS", marks: 35 },
+  { name: "Priya", subject: "DBMS", marks: 55 },
+  { name: "Kiran", subject: "DBMS", marks: 30 },
+  { name: "Omkar", subject: "DBMS", marks: 90 }
+]);
+
+var mapFunction = function () {
+  if (this.marks > 70) emit("Highscores", 1);
+  else if (this.marks <= 70 && this.marks >= 40) emit("Average scores", 1);
+  else emit("Failed", 1);
+};
+
+var reduceFunction = function (key, values) {
+  return Array.sum(values);
+};
+
+db.students_info.mapReduce(
+  mapFunction,
+  reduceFunction,
+  { out: "result_summary" }
+);
+
+db.result_summary.find().pretty();
+
+var mapMarks = function () {
+  emit(this.name, this.marks);
+};
+
+var reduceMarks = function (key, values) {
+  return Array.sum(values);
+};
+
+db.students_info.mapReduce(
+  mapMarks,
+  reduceMarks,
+  { out: "total_marks" }
+);
+
+db.total_marks.find().pretty();
+

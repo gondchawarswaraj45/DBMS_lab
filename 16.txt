@@ -1,0 +1,54 @@
+
+create database studentdb;
+use studentdb;
+
+create table student (
+    rollno int primary key,
+    name varchar(40),
+    marks int,
+    category varchar(30)
+);
+
+insert into student values
+(1, 'Swaraj', 1200, null),
+(2, 'Ravi', 950, null),
+(3, 'Sneha', 870, null),
+(4, 'Amit', 800, null),
+(5, 'Kiran', 995, null);
+
+delimiter $$
+
+create procedure proc_grade()
+begin
+    declare done int default 0;
+    declare rno int;
+    declare mark int;
+    declare cur cursor for select rollno, marks from student;
+    declare continue handler for not found set done = 1;
+
+    open cur;
+    read_loop: loop
+        fetch cur into rno, mark;
+        if done = 1 then
+            leave read_loop;
+        end if;
+
+        if mark >= 990 and mark <= 1500 then
+            update student set category = 'Distinction' where rollno = rno;
+        elseif mark between 900 and 989 then
+            update student set category = 'First Class' where rollno = rno;
+        elseif mark between 825 and 899 then
+            update student set category = 'Higher Second Class' where rollno = rno;
+        else
+            update student set category = 'No Grade' where rollno = rno;
+        end if;
+    end loop;
+    close cur;
+end$$
+
+delimiter ;
+
+call proc_grade;
+
+select * from student;
+

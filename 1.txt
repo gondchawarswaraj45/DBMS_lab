@@ -1,0 +1,29 @@
+﻿use studd;
+db.student.drop();
+db.createCollection("student");
+
+db.student.insertMany([
+  { fname: "Swaraj", lname: "Gondchawar", age: 21, gender: "male", class: "TE A", city: "Pune", grd_point: 35, course: "BE" },
+  { fname: "Ravi", lname: "Patil", age: 18, gender: "male", class: "TE A", city: "Mumbai", grd_point: 28, course: "BE" },
+  { fname: "Sneha", lname: "Kulkarni", age: 20, gender: "female", class: "TE B", city: "Bangalore", grd_point: 30, course: "BE" },
+  { fname: "Amit", lname: "Jadhav", age: 19, gender: "male", class: "TE B", city: "Nagpur", grd_point: 32, course: "BE" },
+  { fname: "Bhakti", lname: "Shinde", age: 22, gender: "female", class: "TE A", city: "Pune", grd_point: 33, course: "BE" },
+  { fname: "Kiran", lname: "More", age: 18, gender: "male", class: "TE C", city: "Bangalore", grd_point: 25, course: "BE" },
+  { fname: "Priya", lname: "Deshmukh", age: 20, gender: "female", class: "TE A", city: "Chennai", grd_point: 34, course: "BE" },
+  { fname: "Tanmay", lname: "Joshi", age: 21, gender: "male", class: "TE B", city: "Bangalore", grd_point: 31, course: "BE" },
+  { fname: "Rutuja", lname: "Pawar", age: 23, gender: "female", class: "TE C", city: "Pune", grd_point: 29, course: "BE" },
+  { fname: "Omkar", lname: "Jadhav", age: 20, gender: "male", class: "TE B", city: "Bangalore", grd_point: 33, course: "BE" }
+]);
+
+db.student.find().pretty();
+db.student.find({ gender: "male", $or: [{ class: "TE A" }, { grd_point: { $gte: 31 } }] }).pretty();
+db.student.find({ city: "Bangalore", age: { $lte: 19 } }).pretty();
+db.student.updateOne({ fname: "Bhakti" }, { $set: { course: "MCA" } });
+db.student.deleteMany({ age: 18, gender: "male" });
+db.student.deleteMany({ lname: "Jadhav", class: "TE B" });
+db.student.find({ $nor: [{ city: "Pune" }, { grd_point: { $gte: 30 } }] }).pretty();
+db.student.updateMany({ class: "TE A" }, { $inc: { grd_point: 5 } });
+db.student.save({ fname: "NewStudent", lname: "Kale", age: 19, gender: "female", class: "TE D", city: "Pune", grd_point: 27, course: "BE" });
+db.student.find().pretty();
+db.student.count();
+
